@@ -84,78 +84,7 @@ def step_impl(context):
 @then('o vídeo não deve apresentar falhas ou perda de qualidade durante a falha no servidor')
 def step_impl(context):
     assert context.is_video_playing is True
-```
 
-### 3. `setup.sh`
-Script para criar a estrutura do projeto, instalar dependências e rodar os testes.
-```sh
-#!/bin/bash
-
-# Criando diretórios
-mkdir -p netflix_test/features
-mkdir -p netflix_test/steps
-
-# Criando arquivo feature
-echo "Feature: Garantia de Disponibilidade do Vídeo
-
-  Scenario: O vídeo continua a ser transmitido mesmo com falha no servidor
-    Given o cliente está assistindo a um vídeo na plataforma da Netflix
-    When ocorre uma falha no servidor responsável por fornecer o arquivo do vídeo
-    Then o cliente deve continuar assistindo ao vídeo sem interrupções perceptíveis
-    And o vídeo não deve apresentar falhas ou perda de qualidade durante a falha no servidor" > netflix_test/features/video_availability.feature
-
-# Criando arquivo de steps em Python
-echo "from behave import given, when, then
-import time
-
-class NetflixServer:
-    def __init__(self):
-        self.available = True
-
-    def simulate_video_playback(self):
-        if not self.available:
-            raise Exception('Falha no servidor!')
-        return True
-
-netflix_server = NetflixServer()
-
-@given('o cliente está assistindo a um vídeo na plataforma da Netflix')
-def step_impl(context):
-    context.is_video_playing = netflix_server.simulate_video_playback()
-    assert context.is_video_playing is True
-
-@when('ocorre uma falha no servidor responsável por fornecer o arquivo do vídeo')
-def step_impl(context):
-    netflix_server.available = False
-    time.sleep(1)
-
-@then('o cliente deve continuar assistindo ao vídeo sem interrupções perceptíveis')
-def step_impl(context):
-    try:
-        context.is_video_playing = netflix_server.simulate_video_playback()
-        assert context.is_video_playing is True
-    except Exception:
-        assert False, 'Falha no servidor impactou a reprodução do vídeo'
-
-@then('o vídeo não deve apresentar falhas ou perda de qualidade durante a falha no servidor')
-def step_impl(context):
-    assert context.is_video_playing is True" > netflix_test/steps/test_video_availability.py
-
-# Instalando dependências
-pip install behave
-```
-
-## Como Rodar os Testes
-
-1. **Executar o script de configuração**:
-   ```sh
-   chmod +x setup.sh
-   ./setup.sh
-   ```
-
-2. **Rodar os testes**:
-   ```sh
-   behave netflix_test/features/video_availability.feature
    ```
 
 ## Conclusão
